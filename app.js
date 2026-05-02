@@ -27,3 +27,8 @@ async function loadPosts() {
 
   console.log(data);
 }
+function submitPost() {
+  const text = document.getElementById("postInput").value;
+  addPost(text);
+}
+loadPosts();
