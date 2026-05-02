@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>HOPR - Calculators</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      max-width: 1000px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 12px;
+      border-radius: 6px;
+      border: none;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    button {
+      background: #334155;
+      color: #e5e7eb;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button:hover {
+      background: #475569;
+    }
+
+    .result {
+      margin-top: 12px;
+      color: #38bdf8;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Calculators</h1>
+  <div class="subtitle">HOPR — Quick Calculation Tools</div>
+
+  <div class="grid">
+
+    <!-- Normal Calculator -->
+    <div class="card">
+      <h2>Basic Calculator</h2>
+
+      <input type="text" id="basicCalc" placeholder="Example: 25 * 4 + 10">
+
+      <button onclick="runBasicCalc()">Calculate</button>
+
+      <div class="result" id="basicResult"></div>
+    </div>
+
+    <!-- Square Footage Calculator -->
+    <div class="card">
+      <h2>Square Footage</h2>
+
+      <label>Length</label>
+      <input type="number" id="length" placeholder="Enter length">
+
+      <label>Width</label>
+      <input type="number" id="width" placeholder="Enter width">
+
+      <button onclick="calculateSqFt()">Calculate Sq Ft</button>
+
+      <div class="result" id="sqftResult"></div>
+    </div>
+
+    <!-- Tax Calculator -->
+    <div class="card">
+      <h2>Tax Calculator</h2>
+
+      <label>Subtotal</label>
+      <input type="number" id="subtotal" placeholder="Enter subtotal">
+
+      <button onclick="calculateTax()">Add 7.25% Tax</button>
+
+      <div class="result" id="taxResult"></div>
+    </div>
+
+  </div>
+
+  <a href="/">← Back to HOPR</a>
+
+  <script>
+    function runBasicCalc() {
+      const input = document.getElementById("basicCalc").value;
+
+      try {
+        const result = Function('"use strict"; return (' + input + ')')();
+
+        if (isNaN(result)) {
+          document.getElementById("basicResult").textContent = "Enter a valid calculation.";
+        } else {
+          document.getElementById("basicResult").textContent = "Result: " + result;
+        }
+      } catch {
+        document.getElementById("basicResult").textContent = "Invalid calculation.";
+      }
+    }
+
+    function calculateSqFt() {
+      const length = parseFloat(document.getElementById("length").value);
+      const width = parseFloat(document.getElementById("width").value);
+
+      if (isNaN(length) || isNaN(width)) {
+        document.getElementById("sqftResult").textContent = "Enter length and width.";
+        return;
+      }
+
+      const sqft = length * width;
+
+      document.getElementById("sqftResult").textContent =
+        "Square Footage: " + sqft.toFixed(2) + " sq ft";
+    }
+
+    function calculateTax() {
+      const subtotal = parseFloat(document.getElementById("subtotal").value);
+      const taxRate = 0.0725;
+
+      if (isNaN(subtotal)) {
+        document.getElementById("taxResult").textContent = "Enter a subtotal.";
+        return;
+      }
+
+      const tax = subtotal * taxRate;
+      const total = subtotal + tax;
+
+      document.getElementById("taxResult").innerHTML =
+        "Tax: $" + tax.toFixed(2) + "<br>" +
+        "Total: $" + total.toFixed(2);
+    }
+  </script>
+
+</body>
+</html>
