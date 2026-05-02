@@ -133,8 +133,6 @@
       <div class="result" id="taxResult"></div>
     </div>
 
-  </div>
-
 <!-- Grout Calculator -->
 <div class="card">
   <h2>Grout Calculator</h2>
@@ -156,8 +154,11 @@
     <option value="0.25">1/4 inch</option>
   </select>
 
-  <label>Grout Depth / Tile Thickness (inches)</label>
-  <input type="number" id="groutDepth" placeholder="Example: 0.25">
+  <label>Tile Thickness / Grout Depth - Inches</label>
+  <input type="number" id="groutDepthInches" placeholder="Example: 0.25">
+
+  <label>Tile Thickness / Grout Depth - MM</label>
+  <input type="number" id="groutDepthMM" placeholder="Example: 6">
 
   <label>Coverage Per Bag / Container (sq ft)</label>
   <input type="number" id="bagCoverage" placeholder="Example: 100">
@@ -165,6 +166,7 @@
   <label>Waste Buffer</label>
   <select id="wasteBuffer">
     <option value="1">No waste</option>
+    <option value="1.05">5%</option>
     <option value="1.10" selected>10%</option>
     <option value="1.15">15%</option>
     <option value="1.20">20%</option>
@@ -173,6 +175,7 @@
   <button onclick="calculateGrout()">Calculate Grout</button>
 
   <div class="result" id="groutResult"></div>
+  
 </div>
   
   <a href="/">← Back to HOPR</a>
@@ -226,49 +229,66 @@
         "Total: $" + total.toFixed(2);
     }
 
-  function calculateGrout() {
-    const sqft = parseFloat(document.getElementById("groutSqft").value);
-    const tileLength = parseFloat(document.getElementById("tileLength").value);
-    const tileWidth = parseFloat(document.getElementById("tileWidth").value);
-    const jointWidth = parseFloat(document.getElementById("jointWidth").value);
-    const groutDepth = parseFloat(document.getElementById("groutDepth").value);
-    const bagCoverage = parseFloat(document.getElementById("bagCoverage").value);
-    const wasteBuffer = parseFloat(document.getElementById("wasteBuffer").value);
+function calculateGrout() {
+  const sqft = parseFloat(document.getElementById("groutSqft").value);
+  const tileLength = parseFloat(document.getElementById("tileLength").value);
+  const tileWidth = parseFloat(document.getElementById("tileWidth").value);
+  const jointWidth = parseFloat(document.getElementById("jointWidth").value);
 
-    if (
-      isNaN(sqft) ||
-      isNaN(tileLength) ||
-      isNaN(tileWidth) ||
-      isNaN(jointWidth) ||
-      isNaN(groutDepth) ||
-      isNaN(bagCoverage)
-    ) {
-      document.getElementById("groutResult").textContent =
-        "Enter all grout calculator fields.";
-      return;
-    }
+  const depthInchesInput = parseFloat(document.getElementById("groutDepthInches").value);
+  const depthMMInput = parseFloat(document.getElementById("groutDepthMM").value);
 
-    if (sqft <= 0 || tileLength <= 0 || tileWidth <= 0 || groutDepth <= 0 || bagCoverage <= 0) {
-      document.getElementById("groutResult").textContent =
-        "All numbers must be greater than zero.";
-      return;
-    }
+  const bagCoverage = parseFloat(document.getElementById("bagCoverage").value);
+  const wasteBuffer = parseFloat(document.getElementById("wasteBuffer").value);
 
-    const adjustedSqft = sqft * wasteBuffer;
-    const containersNeeded = Math.ceil(adjustedSqft / bagCoverage);
+  let groutDepth;
 
-    const jointFactor =
-      ((tileLength + tileWidth) / (tileLength * tileWidth)) *
-      jointWidth *
-      groutDepth *
-      sqft;
-
-    document.getElementById("groutResult").innerHTML =
-      "Adjusted Project Size: " + adjustedSqft.toFixed(2) + " sq ft<br>" +
-      "Recommended Containers: " + containersNeeded + "<br>" +
-      "Joint Demand Factor: " + jointFactor.toFixed(2) + "<br><br>" +
-      "<small>Use product coverage charts when available. Coverage varies by tile size, joint width, tile thickness, and surface texture.</small>";
+  if (!isNaN(depthInchesInput) && depthInchesInput > 0) {
+    groutDepth = depthInchesInput;
+  } else if (!isNaN(depthMMInput) && depthMMInput > 0) {
+    groutDepth = depthMMInput / 25.4;
+  } else {
+    document.getElementById("groutResult").textContent =
+      "Enter tile thickness in inches or millimeters.";
+    return;
   }
+
+  if (
+    isNaN(sqft) ||
+    isNaN(tileLength) ||
+    isNaN(tileWidth) ||
+    isNaN(jointWidth) ||
+    isNaN(bagCoverage)
+  ) {
+    document.getElementById("groutResult").textContent =
+      "Enter all required grout calculator fields.";
+    return;
+  }
+
+  if (
+    sqft <= 0 ||
+    tileLength <= 0 ||
+    tileWidth <= 0 ||
+    jointWidth <= 0 ||
+    groutDepth <= 0 ||
+    bagCoverage <= 0
+  ) {
+    document.getElementById("groutResult").textContent =
+      "All numbers must be greater than zero.";
+    return;
+  }
+
+  const adjustedSqft = sqft * wasteBuffer;
+  const containersNeeded = Math.ceil(adjustedSqft / bagCoverage);
+
+  const depthMM = groutDepth * 25.4;
+
+  document.getElementById("groutResult").innerHTML =
+    "Tile Thickness Used: " + groutDepth.toFixed(3) + " in / " + depthMM.toFixed(1) + " mm<br>" +
+    "Adjusted Project Size: " + adjustedSqft.toFixed(2) + " sq ft<br>" +
+    "Recommended Containers: " + containersNeeded + "<br><br>" +
+    "<small>Coverage is approximate. Verify with product packaging or manufacturer coverage charts.</small>";
+}
     
   </script>
 
