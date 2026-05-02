@@ -15,7 +15,7 @@ async function addPost(text) {
   await supabase.from("posts").insert([
     {
       content: text,
-      user_id: null
+      user_id: user.data.user.id
     }
   ]);
 }
@@ -32,3 +32,20 @@ function submitPost() {
   addPost(text);
 }
 loadPosts();
+
+async function loginUser() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Logged in!");
+    loadPosts();
+  }
+}
