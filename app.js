@@ -15,7 +15,7 @@ async function addPost(text) {
   await supabase.from("posts").insert([
     {
       content: text,
-      user_id: user.data.user.id
+      user_id: null
     }
   ]);
 }
