@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Closing Checklist</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-bottom: 15px;
+    }
+
+    .task {
+      margin-bottom: 18px;
+    }
+
+    label {
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.3);
+    }
+
+    .timestamp {
+      display: block;
+      margin-left: 32px;
+      margin-top: 5px;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    button {
+      background: #334155;
+      color: #e5e7eb;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background: #475569;
+    }
+
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Closing Checklist</h1>
+  <div class="subtitle">
+    HOPR — <span id="todayDate"></span>
+  </div>
+
+  <div class="card">
+    <h2>Critical Tasks</h2>
+
+    <div class="task">
+      <label>
+        <input type="checkbox" id="returns">
+        Returns must be put away. No carts of product left on the sales floor.
+      </label>
+      <span class="timestamp" id="returnsTime"></span>
+    </div>
+
+    <div class="task">
+      <label>
+        <input type="checkbox" id="trash">
+        All trash must be disposed of. Empty pallets taken to the bullpen.
+      </label>
+      <span class="timestamp" id="trashTime"></span>
+    </div>
+
+    <button onclick="resetChecklist()">Reset Checklist</button>
+  </div>
+
+  <a href="/">← Back to Main HOPR</a>
+
+  <script>
+    const tasks = [
+      { id: "returns", timeId: "returnsTime" },
+      { id: "trash", timeId: "trashTime" }
+    ];
+
+    const today = new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    document.getElementById("todayDate").textContent = today;
+
+    tasks.forEach(task => {
+      const checkbox = document.getElementById(task.id);
+      const timeDisplay = document.getElementById(task.timeId);
+
+      const savedChecked = localStorage.getItem(task.id + "_checked");
+      const savedTime = localStorage.getItem(task.id + "_time");
+
+      if (savedChecked === "true") {
+        checkbox.checked = true;
+        timeDisplay.textContent = "Completed: " + savedTime;
+      }
+
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) {
+          const completionTime = new Date().toLocaleString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+          });
+
+          localStorage.setItem(task.id + "_checked", "true");
+          localStorage.setItem(task.id + "_time", completionTime);
+
+          timeDisplay.textContent = "Completed: " + completionTime;
+        } else {
+          localStorage.removeItem(task.id + "_checked");
+          localStorage.removeItem(task.id + "_time");
+
+          timeDisplay.textContent = "";
+        }
+      });
+    });
+
+    function resetChecklist() {
+      tasks.forEach(task => {
+        localStorage.removeItem(task.id + "_checked");
+        localStorage.removeItem(task.id + "_time");
+
+        document.getElementById(task.id).checked = false;
+        document.getElementById(task.timeId).textContent = "";
+      });
+    }
+  </script>
+
+</body>
+</html>
